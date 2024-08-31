@@ -3,9 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HydrationProvider with ChangeNotifier {
-  int _dailyGoal = 2000;
+  int _dailyGoal = 2000;  // Default goal is 2000 ml
   int _totalConsumed = 0;
-  DateTime _lastResetDate = DateTime.now();
+  DateTime lastResetDate = DateTime.now();
   bool _mustCongratulate = false;
 
   int get dailyGoal => _dailyGoal;
@@ -15,16 +15,16 @@ class HydrationProvider with ChangeNotifier {
 
   HydrationProvider() {
     _loadPreferences();
-    _checkForReset();
+    checkForReset();
   }
 
   void _loadPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _dailyGoal = prefs.getInt('dailyGoal') ?? 2000;
     _totalConsumed = prefs.getInt('totalConsumed') ?? 0;
-    _lastResetDate = DateTime.parse(prefs.getString('lastResetDate') ?? DateTime.now().toString());
+    lastResetDate = DateTime.parse(prefs.getString('lastResetDate') ?? DateTime.now().toString());
     _mustCongratulate = prefs.getBool('mustCongratulate') ?? false;
-    _checkForReset();
+    checkForReset();
     notifyListeners();
   }
 
@@ -32,7 +32,7 @@ class HydrationProvider with ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt('dailyGoal', _dailyGoal);
     prefs.setInt('totalConsumed', _totalConsumed);
-    prefs.setString('lastResetDate', _lastResetDate.toString());
+    prefs.setString('lastResetDate', lastResetDate.toString());
     prefs.setBool('mustCongratulate', _mustCongratulate);
   }
 
@@ -59,16 +59,16 @@ class HydrationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void _checkForReset() {
+  void checkForReset() {
     DateTime now = DateTime.now();
-    if (_lastResetDate.day != now.day) {
-      _resetDailyConsumption();
+    if (lastResetDate.day != now.day) {
+      resetDailyConsumption();
     }
   }
 
-  void _resetDailyConsumption() {
+  void resetDailyConsumption() {
     _totalConsumed = 0;
-    _lastResetDate = DateTime.now();
+    lastResetDate = DateTime.now();
     _mustCongratulate = false;
     _savePreferences();
     notifyListeners();
