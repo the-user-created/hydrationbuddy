@@ -69,7 +69,9 @@ class HomePageState extends State<HomePage> {
               child: LinearProgressIndicator(
                 value: hydrationProvider.progress,
                 backgroundColor: Colors.grey[300],
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    hydrationProvider.progress >= 1.0 ? Colors.green : Colors.blue,
+                ),
               ),
             ),
           ),
@@ -79,15 +81,15 @@ class HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(
-                onPressed: () => hydrationProvider.addWater(200),
+                onPressed: () => _addWaterAndCheckGoal(hydrationProvider, 200),
                 child: const Text('200 ml'),
               ),
               ElevatedButton(
-                onPressed: () => hydrationProvider.addWater(500),
+                onPressed: () => _addWaterAndCheckGoal(hydrationProvider, 500),
                 child: const Text('500 ml'),
               ),
               ElevatedButton(
-                onPressed: () => hydrationProvider.addWater(750),
+                onPressed: () => _addWaterAndCheckGoal(hydrationProvider, 750),
                 child: const Text('750 ml'),
               ),
             ],
@@ -104,6 +106,33 @@ class HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _addWaterAndCheckGoal(HydrationProvider hydrationProvider, int amount) {
+    hydrationProvider.addWater(amount);
+    if (hydrationProvider.shouldCongratulate) {
+      _showCongratulatoryDialog(context);
+    }
+  }
+
+  void _showCongratulatoryDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Congratulations!'),
+          content: const Text('You have reached your daily water intake goal!'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();  // Dismiss the dialog
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -129,6 +158,9 @@ class HomePageState extends State<HomePage> {
                     hydrationProvider.setGoal(goal);
                     goalController.clear();
                     Navigator.of(context).pop();
+                    if (hydrationProvider.shouldCongratulate) {
+                      _showCongratulatoryDialog(context);
+                    }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Please enter a positive number greater than 0'),
@@ -148,6 +180,6 @@ class HomePageState extends State<HomePage> {
   }
 
   void _resetWaterConsumption(HydrationProvider hydrationProvider) {
-    hydrationProvider.resetWaterConsumption();
+    hydrationProvider.userResetWaterConsumption();
   }
 }
