@@ -69,7 +69,7 @@ class HomePageState extends State<HomePage> {
               child: LinearProgressIndicator(
                 value: hydrationProvider.progress,
                 backgroundColor: Colors.grey[300],
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
               ),
             ),
           ),
@@ -122,9 +122,23 @@ class HomePageState extends State<HomePage> {
             TextButton(
               child: const Text('Set'),
               onPressed: () {
-                int goal = int.parse(goalController.text);
-                hydrationProvider.setGoal(goal);
-                Navigator.of(context).pop();
+                final goalText = goalController.text;
+                if (goalText.isNotEmpty && int.tryParse(goalText) != null) {
+                  int goal = int.parse(goalText);
+                  if (goal > 0) {
+                    hydrationProvider.setGoal(goal);
+                    goalController.clear();
+                    Navigator.of(context).pop();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please enter a positive number greater than 0'),
+                    ));
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please enter a valid number'),
+                  ));
+                }
               },
             ),
           ],

@@ -20,6 +20,8 @@ class HydrationProvider with ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _dailyGoal = prefs.getInt('dailyGoal') ?? 2000;
     _totalConsumed = prefs.getInt('totalConsumed') ?? 0;
+    _lastResetDate = DateTime.parse(prefs.getString('lastResetDate') ?? DateTime.now().toString());
+    _checkForReset();
     notifyListeners();
   }
 
@@ -27,6 +29,7 @@ class HydrationProvider with ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt('dailyGoal', _dailyGoal);
     prefs.setInt('totalConsumed', _totalConsumed);
+    prefs.setString('lastResetDate', _lastResetDate.toString());
   }
 
   void addWater(int amount) {
