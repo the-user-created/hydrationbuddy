@@ -84,8 +84,6 @@ jobs:
           name: hydration-buddy-artifacts
 
       - name: Create Release
-        env:
-          VERSION: ${{ needs.build.outputs.VERSION }}
         uses: ncipollo/release-action@v1
         with:
           tag: '$version'
