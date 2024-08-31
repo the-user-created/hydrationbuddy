@@ -52,9 +52,6 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
 
-      - name: Debug key.properties
-        run: cat android/key.properties
-
       - name: Install dependencies
         run: flutter pub get
 
