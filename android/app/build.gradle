@@ -9,6 +9,8 @@ def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+} else {
+    println("key.properties file not found: ${keystorePropertiesFile.absolutePath}")
 }
 
 android {
