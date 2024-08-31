@@ -41,6 +41,7 @@ jobs:
       - name: Decode and setup keystore
         run: |
           echo "$KEYSTORE_FILE_BASE64" | base64 --decode > "$HOME/my-release-key.jks"
+          echo "$HOME/my-release-key.jks"
         env:
           KEYSTORE_FILE_BASE64: ${{ secrets.KEYSTORE_FILE_BASE64 }}
 
@@ -50,6 +51,9 @@ jobs:
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
+
+      - name: Debug key.properties
+        run: cat key.properties
 
       - name: Install dependencies
         run: flutter pub get
