@@ -1,0 +1,77 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version-file: pubspec.yaml # Use the version of Flutter that your project is built with
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Extract version from pubspec.yaml
+        id: extract_version
+        run: |
+          echo "VERSION=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | cut -d '+' -f 1)" >> $GITHUB_ENV
+
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Build App Bundle
+        run: flutter build appbundle --release
+
+      - name: Archive APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: hydration-buddy-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Archive App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: hydration-buddy-app-bundle
+          path: build/app/outputs/bundle/release/app-release.aab
+
+  release:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download APK from build
+        uses: actions/download-artifact@v4
+        with:
+          name: hydration-buddy-apk
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.VERSION }}
+          name: 'Hydration Buddy v${{ env.VERSION }}'
+          body: 'Release of Hydration Buddy version ${{ env.VERSION }}.'
+          draft: false
+          prerelease: false
+          artifactErrorsFailBuild: true
+          artifacts: 'build/app/outputs/flutter-apk/app-release.apk, build/app/outputs/bundle/release/app-release.aab'
