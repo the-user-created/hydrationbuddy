@@ -45,7 +45,7 @@ jobs:
         id: extract_version
         run: |
           VERSION=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | cut -d '+' -f 1)
-          echo "::set-output name=version::$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Run tests
@@ -76,14 +76,16 @@ jobs:
       - name: Download APK from build
         uses: actions/download-artifact@v4
         with:
-          name: hydration-buddy-apk
+          name: hydration-buddy-artifacts
 
       - name: Create Release
+        env:
+          VERSION: ${{ needs.build.outputs.VERSION }}
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ needs.build.outputs.version }}
-          name: 'Hydration Buddy v${{ needs.build.outputs.version }}'
-          body: 'Release of Hydration Buddy version ${{ needs.build.outputs.version }}.'
+          tag: '$VERSION'
+          name: 'Hydration Buddy v$VERSION'
+          body: 'Release of Hydration Buddy version $VERSION.'
           draft: false
           prerelease: false
           artifactErrorsFailBuild: true
