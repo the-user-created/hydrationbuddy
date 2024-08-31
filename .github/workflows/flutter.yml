@@ -53,7 +53,7 @@ jobs:
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
 
       - name: Debug key.properties
-        run: cat key.properties
+        run: cat android/key.properties
 
       - name: Install dependencies
         run: flutter pub get
