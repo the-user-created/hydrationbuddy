@@ -97,5 +97,5 @@ jobs:
           prerelease: false
           artifactErrorsFailBuild: true
           artifacts: |
-            flutter-apk/app-release.apk
+            app-release.apk
           replacesArtifacts: true
