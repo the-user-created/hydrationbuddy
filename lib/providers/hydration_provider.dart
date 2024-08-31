@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HydrationProvider with ChangeNotifier {
   int _dailyGoal = 2000;
   int _totalConsumed = 0;
+  DateTime _lastResetDate = DateTime.now();
 
   int get dailyGoal => _dailyGoal;
   int get totalConsumed => _totalConsumed;
@@ -12,6 +13,7 @@ class HydrationProvider with ChangeNotifier {
 
   HydrationProvider() {
     _loadPreferences();
+    _checkForReset();
   }
 
   void _loadPreferences() async {
@@ -35,6 +37,26 @@ class HydrationProvider with ChangeNotifier {
 
   void setGoal(int goal) {
     _dailyGoal = goal;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void resetWaterConsumption() {
+    _totalConsumed = 0;
+    _savePreferences();
+    notifyListeners();
+  }
+
+  void _checkForReset() {
+    DateTime now = DateTime.now();
+    if (_lastResetDate.day != now.day || _lastResetDate.month != now.month || _lastResetDate.year != now.year) {
+      _resetDailyConsumption();
+    }
+  }
+
+  void _resetDailyConsumption() {
+    _totalConsumed = 0;
+    _lastResetDate = DateTime.now();
     _savePreferences();
     notifyListeners();
   }
