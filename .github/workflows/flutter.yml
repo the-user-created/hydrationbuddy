@@ -18,6 +18,7 @@ jobs:
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
+        id: flutter-action
         with:
           channel: 'stable'
           flutter-version-file: pubspec.yaml # Use the version of Flutter that your project is built with
@@ -44,8 +45,8 @@ jobs:
         id: extract_version
         run: |
           VERSION=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | cut -d '+' -f 1)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "Version extracted: $VERSION"
+          echo "::set-output name=version::$VERSION"
+        shell: bash
 
       - name: Run tests
         run: flutter test
@@ -56,17 +57,13 @@ jobs:
       - name: Build App Bundle
         run: flutter build appbundle --release
 
-      - name: Archive APK
+      - name: Archive APK and App Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: hydration-buddy-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-
-      - name: Archive App Bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: hydration-buddy-app-bundle
-          path: build/app/outputs/bundle/release/app-release.aab
+          name: hydration-buddy-artifacts
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
 
   release:
     needs: build
@@ -84,10 +81,13 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ env.VERSION }}
-          name: 'Hydration Buddy v${{ env.VERSION }}'
-          body: 'Release of Hydration Buddy version ${{ env.VERSION }}.'
+          tag: ${{ needs.build.outputs.version }}
+          name: 'Hydration Buddy v${{ needs.build.outputs.version }}'
+          body: 'Release of Hydration Buddy version ${{ needs.build.outputs.version }}.'
           draft: false
           prerelease: false
           artifactErrorsFailBuild: true
-          artifacts: 'build/app/outputs/flutter-apk/app-release.apk, build/app/outputs/bundle/release/app-release.aab'
+          artifacts: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+          replacesArtifacts: true
