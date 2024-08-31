@@ -41,13 +41,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Extract version from pubspec.yaml
-        id: extract_version
-        run: |
-          VERSION=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | cut -d '+' -f 1)
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-        shell: bash
-
       - name: Run tests
         run: flutter test
 
@@ -73,6 +66,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Extract version from pubspec.yaml
+        id: extract_version
+        run: |
+          VERSION=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | cut -d '+' -f 1)
+          echo "version=$VERSION" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Verify version
+        run: |
+          echo $version
+        shell: bash
+
       - name: Download APK from build
         uses: actions/download-artifact@v4
         with:
@@ -83,9 +88,9 @@ jobs:
           VERSION: ${{ needs.build.outputs.VERSION }}
         uses: ncipollo/release-action@v1
         with:
-          tag: '$VERSION'
-          name: 'Hydration Buddy v$VERSION'
-          body: 'Release of Hydration Buddy version $VERSION.'
+          tag: '$version'
+          name: 'Hydration Buddy v$version'
+          body: 'Release of Hydration Buddy version $version.'
           draft: false
           prerelease: false
           artifactErrorsFailBuild: true
