@@ -86,9 +86,9 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          tag: '$version'
-          name: 'Hydration Buddy v$version'
-          body: 'Release of Hydration Buddy version $version.'
+          tag: '${{ env.version }}'
+          name: 'Hydration Buddy v${{ env.version }}'
+          body: 'Release of Hydration Buddy version ${{ env.version }}.'
           draft: false
           prerelease: false
           artifactErrorsFailBuild: true
