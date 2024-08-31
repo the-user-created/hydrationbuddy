@@ -38,6 +38,19 @@ jobs:
           echo PUB-CACHE-KEY=${{ steps.flutter-action.outputs.PUB-CACHE-KEY }}
         shell: bash
 
+      - name: Decode and setup keystore
+        run: |
+          echo "$KEYSTORE_FILE_BASE64" | base64 --decode > "$HOME/my-release-key.jks"
+        env:
+          KEYSTORE_FILE_BASE64: ${{ secrets.KEYSTORE_FILE_BASE64 }}
+
+      - name: Create key.properties
+        run: |
+          echo "storeFile=$HOME/my-release-key.jks" > key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -45,18 +58,14 @@ jobs:
         run: flutter test
 
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --target-platform android-arm64
 
-      - name: Build App Bundle
-        run: flutter build appbundle --release
-
-      - name: Archive APK and App Bundle
+      - name: Archive APK
         uses: actions/upload-artifact@v4
         with:
-          name: hydration-buddy-artifacts
+          name: hydration-buddy-apk
           path: |
             build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
 
   release:
     needs: build
@@ -73,15 +82,10 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_ENV
         shell: bash
 
-      - name: Verify version
-        run: |
-          echo $version
-        shell: bash
-
       - name: Download APK from build
         uses: actions/download-artifact@v4
         with:
-          name: hydration-buddy-artifacts
+          name: hydration-buddy-apk
 
       - name: Create Release
         uses: ncipollo/release-action@v1
@@ -94,5 +98,4 @@ jobs:
           artifactErrorsFailBuild: true
           artifacts: |
             flutter-apk/app-release.apk
-            bundle/release/app-release.aab
           replacesArtifacts: true
