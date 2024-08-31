@@ -43,9 +43,6 @@ android {
             keyPassword = keystoreProperties['keyPassword']
             storeFile = keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
             storePassword = keystoreProperties['storePassword']
-            v2SigningEnabled = true
-            v3SigningEnabled = true
-            v4SigningEnabled = true
         }
     }
 
