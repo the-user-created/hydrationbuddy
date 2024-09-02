@@ -5,7 +5,7 @@ description: "A simple water intake tracker app."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
-version: 1.0.5+1
+version: 1.0.6+1
 
 environment:
   sdk: ^3.5.1

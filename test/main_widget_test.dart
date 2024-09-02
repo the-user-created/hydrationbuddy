@@ -28,15 +28,15 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('200 ml'));
+    await tester.tap(find.text('250 ml'));
     await tester.pump();
 
-    expect(find.text('Total Consumed: 200 ml'), findsOneWidget);
+    expect(find.text('Total Consumed: 250 ml'), findsOneWidget);
 
     await tester.tap(find.text('500 ml'));
     await tester.pump();
 
-    expect(find.text('Total Consumed: 700 ml'), findsOneWidget);
+    expect(find.text('Total Consumed: 750 ml'), findsOneWidget);
   });
 
   testWidgets('Setting a goal updates the goal text', (WidgetTester tester) async {
