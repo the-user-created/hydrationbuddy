@@ -35,12 +35,11 @@ jobs:
         run: |
           if [ "${{ env.current_version }}" != "${{ env.previous_version }}" ]; then
             echo "Version changed"
-            echo "version_changed=true" >> $GITHUB_ENV
+            echo "::set-output name=version_changed::true"
           else
             echo "Version not changed"
-            echo "version_changed=false" >> $GITHUB_ENV
+            echo "::set-output name=version_changed::false"
           fi
-        shell: bash
 
   build:
     runs-on: self-hosted
