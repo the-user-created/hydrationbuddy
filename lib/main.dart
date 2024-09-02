@@ -56,7 +56,10 @@ class HomePageState extends State<HomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Water Intake Goal: ${hydrationProvider.dailyGoal} ml'),
+          Text(
+            'Water Intake Goal: ${hydrationProvider.dailyGoal} ml',
+            style: const TextStyle(fontSize: 18),
+          ),
           Container(
             height: 20,
             width: 300,
@@ -76,13 +79,16 @@ class HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 20),
-          Text('Total Consumed: ${hydrationProvider.totalConsumed} ml'),
+          Text(
+            'Total Consumed: ${hydrationProvider.totalConsumed} ml',
+            style: const TextStyle(fontSize: 18),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(
-                onPressed: () => _addWaterAndCheckGoal(hydrationProvider, 200),
-                child: const Text('200 ml'),
+                onPressed: () => _addWaterAndCheckGoal(hydrationProvider, 250),
+                child: const Text('250 ml'),
               ),
               ElevatedButton(
                 onPressed: () => _addWaterAndCheckGoal(hydrationProvider, 500),
